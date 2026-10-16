@@ -1,0 +1,41 @@
+Best settings: logistic regression C=10.0, Naive Bayes alpha=0.1
+
+=== Logistic regression ===
+Accuracy: 0.881
+Macro F1: 0.832
+              precision    recall  f1-score   support
+
+     sadness      0.937     0.898     0.917       581
+         joy      0.929     0.901     0.915       695
+        love      0.702     0.830     0.761       159
+       anger      0.869     0.895     0.882       275
+        fear      0.858     0.835     0.846       224
+    surprise      0.613     0.742     0.671        66
+
+    accuracy                          0.881      2000
+   macro avg      0.818     0.850     0.832      2000
+weighted avg      0.887     0.881     0.883      2000
+
+=== Naive Bayes ===
+Accuracy: 0.765
+Macro F1: 0.629
+              precision    recall  f1-score   support
+
+     sadness      0.760     0.886     0.818       581
+         joy      0.726     0.947     0.822       695
+        love      0.817     0.365     0.504       159
+       anger      0.880     0.585     0.703       275
+        fear      0.861     0.580     0.693       224
+    surprise      0.818     0.136     0.234        66
+
+    accuracy                          0.765      2000
+   macro avg      0.810     0.583     0.629      2000
+weighted avg      0.782     0.765     0.745      2000
+
+Top words per emotion (logistic regression):
+  sadness   lethargic, troubled, unfortunate, punished, disturbed, melancholy, unimportant, unwelcome, awkward, lousy
+  joy       superior, innocent, satisfied, sincere, convinced, divine, resolved, pleasant, respected, determined
+  love      sympathetic, caring, nostalgic, longing, loyal, fond, supportive, tender, horny, naughty
+  anger     offended, resentful, greedy, dangerous, rude, distracted, irritable, rushed, fucked, bitter
+  fear      pressured, terrified, shaken, reluctant, vulnerable, paranoid, uncertain, threatened, intimidated, apprehensive
+  surprise  impressed, amazed, curious, surprised, shocked, funny, dazed, stunned, overwhelmed, strange
