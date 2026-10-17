@@ -1,4 +1,5 @@
 import math
+import os
 import time
 import copy
 
@@ -90,6 +91,7 @@ class Connect4PredictorAI:
     def __init__(self, env):
         self.env = env
         self.nodes_expanded = 0
+        self.search_tree = None  # list of node dicts when tree recording is on
 
     def evaluate_window(self, window, player):
         """Scores a 4-cell window based on piece alignments."""
@@ -161,12 +163,45 @@ class Connect4PredictorAI:
     # Returns: (heuristic_score, predicted_move_sequence)
     # =================================================================
 
-    def minimax_search(self, board, depth, alpha, beta, maximizing_player, use_pruning=True):
+    def _record_node(self, parent_id, move, maximizing_player, depth_from_root):
+        """Adds a node to the search tree (only when tree recording is switched on)."""
+        if self.search_tree is None:
+            return None
+        node_id = len(self.search_tree)
+        self.search_tree.append({
+            "id": node_id,
+            "parent": parent_id,
+            "move": move,                  # (player, col) that led to this state, None for root
+            "is_max": maximizing_player,   # whose turn it is AT this node
+            "level": depth_from_root,
+            "score": None,
+            "children": [],
+            "best_child": None,
+            "pruned": False,
+            "leaf_type": None,             # 'heuristic', 'win', 'loss', 'draw' or None
+        })
+        if parent_id is not None:
+            self.search_tree[parent_id]["children"].append(node_id)
+        return node_id
+
+    def _record_pruned(self, parent_id, player, cols, maximizing_player, depth_from_root):
+        """Marks the columns skipped by an alpha-beta cut-off as pruned branches."""
+        if self.search_tree is None:
+            return
+        for col in cols:
+            node_id = self._record_node(parent_id, (player, col), maximizing_player, depth_from_root)
+            self.search_tree[node_id]["pruned"] = True
+
+    def minimax_search(self, board, depth, alpha, beta, maximizing_player, use_pruning=True,
+                       _parent_id=None, _move=None, _level=0):
         """
         Explores the future game tree up to 'depth' turns ahead.
         Returns both the heuristic score AND the predicted sequence of future moves!
+        If self.search_tree is a list, every node visited is recorded for visualisation.
         """
         self.nodes_expanded += 1
+        node_id = self._record_node(_parent_id, _move, maximizing_player, _level)
+        node = self.search_tree[node_id] if node_id is not None else {}
         valid_actions = self.env.get_valid_actions(board)
         is_terminal = self.env.is_terminal_state(board)
 
@@ -174,51 +209,68 @@ class Connect4PredictorAI:
         if depth == 0 or is_terminal:
             if is_terminal:
                 if self.env.check_winner(board, PLAYER_1):
-                    return (10000 + depth, [])  # Prefer faster wins
+                    result, leaf_type = (10000 + depth, []), "win"  # Prefer faster wins
                 elif self.env.check_winner(board, PLAYER_2):
-                    return (-10000 - depth, [])
+                    result, leaf_type = (-10000 - depth, []), "loss"
                 else:
-                    return (0, [])  # Draw
+                    result, leaf_type = (0, []), "draw"  # Draw
             else:
-                return (self.heuristic_evaluation(board, PLAYER_1), [])
+                result, leaf_type = (self.heuristic_evaluation(board, PLAYER_1), []), "heuristic"
+            node["score"], node["leaf_type"] = result[0], leaf_type
+            return result
 
         if maximizing_player:
             max_eval = -math.inf
             best_sequence = []
-            for col in valid_actions:
+            for i, col in enumerate(valid_actions):
                 next_board = self.env.transition_model(board, col, PLAYER_1)
                 eval_score, future_seq = self.minimax_search(
-                    next_board, depth - 1, alpha, beta, False, use_pruning
+                    next_board, depth - 1, alpha, beta, False, use_pruning,
+                    node_id, (PLAYER_1, col), _level + 1
                 )
                 if eval_score > max_eval:
                     max_eval = eval_score
                     best_sequence = [(PLAYER_1, col)] + future_seq
+                    if node_id is not None:
+                        node["best_child"] = node["children"][-1]
                 if use_pruning:
                     alpha = max(alpha, eval_score)
                     if beta <= alpha:
+                        self._record_pruned(node_id, PLAYER_1, valid_actions[i + 1:], False, _level + 1)
                         break  # Beta cut-off (pruning suboptimal branches)
+            node["score"] = max_eval
             return max_eval, best_sequence
 
         else:
             min_eval = math.inf
             best_sequence = []
-            for col in valid_actions:
+            for i, col in enumerate(valid_actions):
                 next_board = self.env.transition_model(board, col, PLAYER_2)
                 eval_score, future_seq = self.minimax_search(
-                    next_board, depth - 1, alpha, beta, True, use_pruning
+                    next_board, depth - 1, alpha, beta, True, use_pruning,
+                    node_id, (PLAYER_2, col), _level + 1
                 )
                 if eval_score < min_eval:
                     min_eval = eval_score
                     best_sequence = [(PLAYER_2, col)] + future_seq
+                    if node_id is not None:
+                        node["best_child"] = node["children"][-1]
                 if use_pruning:
                     beta = min(beta, eval_score)
                     if beta <= alpha:
+                        self._record_pruned(node_id, PLAYER_2, valid_actions[i + 1:], True, _level + 1)
                         break  # Alpha cut-off
+            node["score"] = min_eval
             return min_eval, best_sequence
 
-    def predict_future(self, board, current_player, depth=4, use_pruning=True):
-        """Runs the predictor and returns a full analysis dictionary."""
+    def predict_future(self, board, current_player, depth=4, use_pruning=True, record_tree=False):
+        """
+        Runs the predictor and returns a full analysis dictionary.
+        If record_tree=True, the explored search tree is stored in self.search_tree
+        so it can be drawn with SearchTreeVisualiser.
+        """
         self.nodes_expanded = 0
+        self.search_tree = [] if record_tree else None
         start_time = time.perf_counter()
 
         maximizing = (current_player == PLAYER_1)
@@ -241,7 +293,176 @@ class Connect4PredictorAI:
 
 
 # =====================================================================
-# 4. CASE STUDY BENCHMARK & INTERACTIVE ADVISOR
+# 4. SEARCH TREE VISUALISATION (Graphviz)
+# Draws the Minimax / Alpha-Beta game tree with the chosen move highlighted
+# Requires: pip install graphviz  AND  the Graphviz program (https://graphviz.org/download/)
+# =====================================================================
+
+class SearchTreeVisualiser:
+    # Colours
+    MAX_FILL = "#dbe9ff"     # Player 1 ('X') to move  -> MAX node
+    MIN_FILL = "#ffe0e0"     # Player 2 ('O') to move  -> MIN node
+    PV_COLOUR = "#2e7d32"    # Principal variation (predicted best line of play)
+    CHOSEN_FILL = "#ffd54f"  # The move the AI actually recommends
+    PRUNED_COLOUR = "#9e9e9e"
+
+    def __init__(self, search_tree):
+        self.tree = search_tree
+        self.pv_nodes = self._principal_variation()
+
+    def _principal_variation(self):
+        """Follows best_child links from the root to get the predicted line of play."""
+        pv = set()
+        node_id = 0
+        while node_id is not None:
+            pv.add(node_id)
+            node_id = self.tree[node_id]["best_child"]
+        return pv
+
+    def _subtree_size(self, node_id):
+        return 1 + sum(self._subtree_size(c) for c in self.tree[node_id]["children"])
+
+    @staticmethod
+    def _format_score(node):
+        if node["leaf_type"] == "win":
+            return "X WINS"
+        if node["leaf_type"] == "loss":
+            return "O WINS"
+        return str(node["score"])
+
+    def _label(self, node):
+        if node["move"] is None:
+            to_move = "X" if node["is_max"] else "O"
+            return f"ROOT ({to_move} to move)\nscore: {self._format_score(node)}"
+        player, col = node["move"]
+        symbol = "X" if player == PLAYER_1 else "O"
+        if node["pruned"]:
+            return f"{symbol} -> col {col}\n(pruned)"
+        role = "MAX" if node["is_max"] else "MIN"
+        if node["leaf_type"] == "heuristic":
+            role = "h(n)"
+        return f"{symbol} -> col {col}\n{role}: {self._format_score(node)}"
+
+    def build_graph(self, max_levels=3, title=None):
+        """
+        Builds a graphviz.Digraph of the search tree.
+        Levels deeper than max_levels are collapsed into '+N nodes' summaries, except
+        along the principal variation, which is always drawn down to the leaf.
+        """
+        import graphviz
+
+        dot = graphviz.Digraph("SearchTree")
+        dot.attr(rankdir="TB", nodesep="0.15", ranksep="0.6")
+        dot.attr("node", shape="box", style="rounded,filled", fontname="Helvetica", fontsize="10")
+        dot.attr("edge", arrowsize="0.6")
+        if title:
+            dot.attr(label=title, labelloc="t", fontsize="16", fontname="Helvetica-Bold")
+
+        chosen_id = self.tree[0]["best_child"]
+        stack = [0]
+        while stack:
+            node_id = stack.pop()
+            node = self.tree[node_id]
+            on_pv = node_id in self.pv_nodes
+
+            # --- Node styling ---
+            attrs = {"fillcolor": self.MAX_FILL if node["is_max"] else self.MIN_FILL}
+            if node["pruned"]:
+                attrs = {"fillcolor": "#f5f5f5", "color": self.PRUNED_COLOUR,
+                         "fontcolor": self.PRUNED_COLOUR, "style": "rounded,dashed,filled"}
+            if on_pv:
+                attrs.update(color=self.PV_COLOUR, penwidth="2.5")
+            if node_id == chosen_id:
+                attrs.update(fillcolor=self.CHOSEN_FILL, penwidth="3.5",
+                             fontname="Helvetica-Bold")
+            dot.node(str(node_id), self._label(node), **attrs)
+
+            # --- Children ---
+            hidden = 0
+            for child_id in node["children"]:
+                child = self.tree[child_id]
+                if child["level"] > max_levels and child_id not in self.pv_nodes:
+                    hidden += self._subtree_size(child_id)
+                    continue
+                edge_attrs = {}
+                if child_id in self.pv_nodes:
+                    edge_attrs = {"color": self.PV_COLOUR, "penwidth": "3"}
+                elif child["pruned"]:
+                    edge_attrs = {"color": self.PRUNED_COLOUR, "style": "dashed"}
+                dot.edge(str(node_id), str(child_id), **edge_attrs)
+                stack.append(child_id)
+
+            if hidden:
+                summary_id = f"{node_id}_hidden"
+                dot.node(summary_id, f"+{hidden} nodes", shape="plaintext",
+                         style="", fontcolor="#757575", fontsize="9")
+                dot.edge(str(node_id), summary_id, style="dotted", color="#bdbdbd", arrowhead="none")
+
+        # --- Legend ---
+        with dot.subgraph(name="cluster_legend") as legend:
+            legend.attr(label="Key", fontsize="11", style="rounded", color="#bdbdbd")
+            legend.node("legend_chosen", "Chosen move", fillcolor=self.CHOSEN_FILL,
+                        color=self.PV_COLOUR, penwidth="3.5")
+            legend.node("legend_pv", "Predicted best line", fillcolor="white",
+                        color=self.PV_COLOUR, penwidth="2.5")
+            legend.node("legend_max", "MAX node (X to move)", fillcolor=self.MAX_FILL)
+            legend.node("legend_min", "MIN node (O to move)", fillcolor=self.MIN_FILL)
+            legend.node("legend_pruned", "Pruned branch", fillcolor="#f5f5f5",
+                        color=self.PRUNED_COLOUR, fontcolor=self.PRUNED_COLOUR,
+                        style="rounded,dashed,filled")
+            # Invisible edges just stack the key entries vertically
+            for a, b in [("legend_chosen", "legend_pv"), ("legend_pv", "legend_max"),
+                         ("legend_max", "legend_min"), ("legend_min", "legend_pruned")]:
+                legend.edge(a, b, style="invis")
+
+        return dot
+
+    def render(self, filename="search_tree", max_levels=3, title=None, fmt="png", view=True):
+        """
+        Renders the tree to an image. If the Graphviz program isn't installed, the
+        .dot source is still saved so it can be pasted into https://dreampuf.github.io/GraphvizOnline
+        """
+        try:
+            import graphviz
+        except ImportError:
+            print("[Search Tree] The 'graphviz' Python package is missing - run: pip install graphviz")
+            return None
+
+        # Save next to this script, regardless of which folder it was run from
+        filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
+
+        dot = self.build_graph(max_levels=max_levels, title=title)
+        try:
+            path = dot.render(filename, format=fmt, view=view, cleanup=True)
+            print(f"[Search Tree] Saved to {path}")
+            return path
+        except graphviz.ExecutableNotFound:
+            if os.path.exists(filename):
+                os.remove(filename)  # extension-less source graphviz leaves behind on failure
+            dot_path = f"{filename}.dot"
+            dot.save(dot_path)
+            print("[Search Tree] Graphviz program not found on PATH, so no image was drawn.")
+            print(f"[Search Tree] Saved the source to {dot_path} instead - install Graphviz from "
+                  "https://graphviz.org/download/ to render it.")
+            return dot_path
+
+
+def show_search_tree(ai, board, current_player, depth=4, max_levels=3,
+                     filename="search_tree", view=True):
+    """Runs an Alpha-Beta search with tree recording on and draws the result."""
+    prediction = ai.predict_future(board, current_player, depth=depth,
+                                   use_pruning=True, record_tree=True)
+    symbol = "X" if current_player == PLAYER_1 else "O"
+    title = (f"Alpha-Beta search tree (depth {depth}, {symbol} to move) - "
+             f"chosen column {prediction['recommended_move']}, "
+             f"{prediction['nodes_expanded']} nodes expanded")
+    SearchTreeVisualiser(ai.search_tree).render(filename, max_levels=max_levels,
+                                                title=title, view=view)
+    return prediction
+
+
+# =====================================================================
+# 5. CASE STUDY BENCHMARK & INTERACTIVE ADVISOR
 # =====================================================================
 
 def run_report_experiments():
@@ -285,6 +506,11 @@ def run_report_experiments():
     print(f"\n[AI Move Forecast (Next 5 Turns)]: {seq_str}")
     print(f"[AI Evaluation]: Player 1 ('X') has a {res_ab['p1_win_probability']}% chance of winning from this state.\n")
 
+    # Draw the Alpha-Beta search tree for this test state (for the report)
+    show_search_tree(ai, env.board, PLAYER_1, depth=4, max_levels=2,
+                     filename="search_tree_midgame", view=False)
+    print()
+
 
 def interactive_advisor_mode():
     """Allows players to play Connect 4 while the AI predicts future moves at every turn."""
@@ -295,7 +521,7 @@ def interactive_advisor_mode():
 
     print("=" * 70)
     print("INTERACTIVE CONNECT 4 AI MOVE PREDICTOR & ADVISOR")
-    print("Enter a column (0-6) to drop a piece, or 'q' to quit.")
+    print("Enter a column (0-6) to drop a piece, 't' to view the AI's search tree, or 'q' to quit.")
     print("=" * 70)
 
     while not env.is_terminal_state(env.board):
@@ -316,6 +542,11 @@ def interactive_advisor_mode():
         if user_input.lower() == 'q':
             print("Exiting interactive mode.")
             break
+
+        if user_input.lower() == 't':
+            # Full depth-5 search, showing the top 2 levels plus the whole predicted line
+            show_search_tree(ai, env.board, current_player, depth=search_depth, max_levels=2)
+            continue
 
         if not user_input.isdigit() or int(user_input) not in env.get_valid_actions(env.board):
             print("Invalid column! Please pick a non-full column between 0 and 6.")

@@ -1,0 +1,244 @@
+digraph SearchTree {
+	nodesep=0.15 rankdir=TB ranksep=0.6
+	node [fontname=Helvetica fontsize=10 shape=box style="rounded,filled"]
+	edge [arrowsize=0.6]
+	fontname="Helvetica-Bold" fontsize=16 label="Alpha-Beta search tree (depth 4, X to move) - chosen column 3, 460 nodes expanded" labelloc=t
+	0 [label="ROOT (X to move)
+score: 2" color="#2e7d32" fillcolor="#dbe9ff" penwidth=2.5]
+	0 -> 1 [color="#2e7d32" penwidth=3]
+	0 -> 149
+	0 -> 213
+	0 -> 333
+	0 -> 397
+	0 -> 755
+	0 -> 819
+	819 [label="X -> col 6
+MIN: 2" fillcolor="#ffe0e0"]
+	819 -> 820
+	819 -> 870
+	819 -> 906
+	819 -> 942
+	819 -> 978
+	819 -> 1035 [color="#9e9e9e" style=dashed]
+	819 -> 1036 [color="#9e9e9e" style=dashed]
+	1036 [label="O -> col 6
+(pruned)" color="#9e9e9e" fillcolor="#f5f5f5" fontcolor="#9e9e9e" style="rounded,dashed,filled"]
+	1035 [label="O -> col 0
+(pruned)" color="#9e9e9e" fillcolor="#f5f5f5" fontcolor="#9e9e9e" style="rounded,dashed,filled"]
+	978 [label="O -> col 5
+MAX: 2" fillcolor="#dbe9ff"]
+	"978_hidden" [label="+56 nodes" fontcolor="#757575" fontsize=9 shape=plaintext style=""]
+	978 -> "978_hidden" [arrowhead=none color="#bdbdbd" style=dotted]
+	942 [label="O -> col 1
+MAX: 10001" fillcolor="#dbe9ff"]
+	"942_hidden" [label="+35 nodes" fontcolor="#757575" fontsize=9 shape=plaintext style=""]
+	942 -> "942_hidden" [arrowhead=none color="#bdbdbd" style=dotted]
+	906 [label="O -> col 4
+MAX: 10001" fillcolor="#dbe9ff"]
+	"906_hidden" [label="+35 nodes" fontcolor="#757575" fontsize=9 shape=plaintext style=""]
+	906 -> "906_hidden" [arrowhead=none color="#bdbdbd" style=dotted]
+	870 [label="O -> col 2
+MAX: 10001" fillcolor="#dbe9ff"]
+	"870_hidden" [label="+35 nodes" fontcolor="#757575" fontsize=9 shape=plaintext style=""]
+	870 -> "870_hidden" [arrowhead=none color="#bdbdbd" style=dotted]
+	820 [label="O -> col 3
+MAX: 10001" fillcolor="#dbe9ff"]
+	"820_hidden" [label="+49 nodes" fontcolor="#757575" fontsize=9 shape=plaintext style=""]
+	820 -> "820_hidden" [arrowhead=none color="#bdbdbd" style=dotted]
+	755 [label="X -> col 0
+MIN: 2" fillcolor="#ffe0e0"]
+	755 -> 756
+	755 -> 813 [color="#9e9e9e" style=dashed]
+	755 -> 814 [color="#9e9e9e" style=dashed]
+	755 -> 815 [color="#9e9e9e" style=dashed]
+	755 -> 816 [color="#9e9e9e" style=dashed]
+	755 -> 817 [color="#9e9e9e" style=dashed]
+	755 -> 818 [color="#9e9e9e" style=dashed]
+	818 [label="O -> col 6
+(pruned)" color="#9e9e9e" fillcolor="#f5f5f5" fontcolor="#9e9e9e" style="rounded,dashed,filled"]
+	817 [label="O -> col 0
+(pruned)" color="#9e9e9e" fillcolor="#f5f5f5" fontcolor="#9e9e9e" style="rounded,dashed,filled"]
+	816 [label="O -> col 5
+(pruned)" color="#9e9e9e" fillcolor="#f5f5f5" fontcolor="#9e9e9e" style="rounded,dashed,filled"]
+	815 [label="O -> col 1
+(pruned)" color="#9e9e9e" fillcolor="#f5f5f5" fontcolor="#9e9e9e" style="rounded,dashed,filled"]
+	814 [label="O -> col 4
+(pruned)" color="#9e9e9e" fillcolor="#f5f5f5" fontcolor="#9e9e9e" style="rounded,dashed,filled"]
+	813 [label="O -> col 2
+(pruned)" color="#9e9e9e" fillcolor="#f5f5f5" fontcolor="#9e9e9e" style="rounded,dashed,filled"]
+	756 [label="O -> col 3
+MAX: 2" fillcolor="#dbe9ff"]
+	"756_hidden" [label="+56 nodes" fontcolor="#757575" fontsize=9 shape=plaintext style=""]
+	756 -> "756_hidden" [arrowhead=none color="#bdbdbd" style=dotted]
+	397 [label="X -> col 5
+MIN: 0" fillcolor="#ffe0e0"]
+	397 -> 398
+	397 -> 448
+	397 -> 498
+	397 -> 548
+	397 -> 598
+	397 -> 648
+	397 -> 698
+	698 [label="O -> col 6
+MAX: 0" fillcolor="#dbe9ff"]
+	"698_hidden" [label="+56 nodes" fontcolor="#757575" fontsize=9 shape=plaintext style=""]
+	698 -> "698_hidden" [arrowhead=none color="#bdbdbd" style=dotted]
+	648 [label="O -> col 0
+MAX: 10001" fillcolor="#dbe9ff"]
+	"648_hidden" [label="+49 nodes" fontcolor="#757575" fontsize=9 shape=plaintext style=""]
+	648 -> "648_hidden" [arrowhead=none color="#bdbdbd" style=dotted]
+	598 [label="O -> col 5
+MAX: 10001" fillcolor="#dbe9ff"]
+	"598_hidden" [label="+49 nodes" fontcolor="#757575" fontsize=9 shape=plaintext style=""]
+	598 -> "598_hidden" [arrowhead=none color="#bdbdbd" style=dotted]
+	548 [label="O -> col 1
+MAX: 10001" fillcolor="#dbe9ff"]
+	"548_hidden" [label="+49 nodes" fontcolor="#757575" fontsize=9 shape=plaintext style=""]
+	548 -> "548_hidden" [arrowhead=none color="#bdbdbd" style=dotted]
+	498 [label="O -> col 4
+MAX: 10001" fillcolor="#dbe9ff"]
+	"498_hidden" [label="+49 nodes" fontcolor="#757575" fontsize=9 shape=plaintext style=""]
+	498 -> "498_hidden" [arrowhead=none color="#bdbdbd" style=dotted]
+	448 [label="O -> col 2
+MAX: 10001" fillcolor="#dbe9ff"]
+	"448_hidden" [label="+49 nodes" fontcolor="#757575" fontsize=9 shape=plaintext style=""]
+	448 -> "448_hidden" [arrowhead=none color="#bdbdbd" style=dotted]
+	398 [label="O -> col 3
+MAX: 10001" fillcolor="#dbe9ff"]
+	"398_hidden" [label="+49 nodes" fontcolor="#757575" fontsize=9 shape=plaintext style=""]
+	398 -> "398_hidden" [arrowhead=none color="#bdbdbd" style=dotted]
+	333 [label="X -> col 1
+MIN: 2" fillcolor="#ffe0e0"]
+	333 -> 334
+	333 -> 391 [color="#9e9e9e" style=dashed]
+	333 -> 392 [color="#9e9e9e" style=dashed]
+	333 -> 393 [color="#9e9e9e" style=dashed]
+	333 -> 394 [color="#9e9e9e" style=dashed]
+	333 -> 395 [color="#9e9e9e" style=dashed]
+	333 -> 396 [color="#9e9e9e" style=dashed]
+	396 [label="O -> col 6
+(pruned)" color="#9e9e9e" fillcolor="#f5f5f5" fontcolor="#9e9e9e" style="rounded,dashed,filled"]
+	395 [label="O -> col 0
+(pruned)" color="#9e9e9e" fillcolor="#f5f5f5" fontcolor="#9e9e9e" style="rounded,dashed,filled"]
+	394 [label="O -> col 5
+(pruned)" color="#9e9e9e" fillcolor="#f5f5f5" fontcolor="#9e9e9e" style="rounded,dashed,filled"]
+	393 [label="O -> col 1
+(pruned)" color="#9e9e9e" fillcolor="#f5f5f5" fontcolor="#9e9e9e" style="rounded,dashed,filled"]
+	392 [label="O -> col 4
+(pruned)" color="#9e9e9e" fillcolor="#f5f5f5" fontcolor="#9e9e9e" style="rounded,dashed,filled"]
+	391 [label="O -> col 2
+(pruned)" color="#9e9e9e" fillcolor="#f5f5f5" fontcolor="#9e9e9e" style="rounded,dashed,filled"]
+	334 [label="O -> col 3
+MAX: 2" fillcolor="#dbe9ff"]
+	"334_hidden" [label="+56 nodes" fontcolor="#757575" fontsize=9 shape=plaintext style=""]
+	334 -> "334_hidden" [arrowhead=none color="#bdbdbd" style=dotted]
+	213 [label="X -> col 4
+MIN: -1" fillcolor="#ffe0e0"]
+	213 -> 214
+	213 -> 271
+	213 -> 328 [color="#9e9e9e" style=dashed]
+	213 -> 329 [color="#9e9e9e" style=dashed]
+	213 -> 330 [color="#9e9e9e" style=dashed]
+	213 -> 331 [color="#9e9e9e" style=dashed]
+	213 -> 332 [color="#9e9e9e" style=dashed]
+	332 [label="O -> col 6
+(pruned)" color="#9e9e9e" fillcolor="#f5f5f5" fontcolor="#9e9e9e" style="rounded,dashed,filled"]
+	331 [label="O -> col 0
+(pruned)" color="#9e9e9e" fillcolor="#f5f5f5" fontcolor="#9e9e9e" style="rounded,dashed,filled"]
+	330 [label="O -> col 5
+(pruned)" color="#9e9e9e" fillcolor="#f5f5f5" fontcolor="#9e9e9e" style="rounded,dashed,filled"]
+	329 [label="O -> col 1
+(pruned)" color="#9e9e9e" fillcolor="#f5f5f5" fontcolor="#9e9e9e" style="rounded,dashed,filled"]
+	328 [label="O -> col 4
+(pruned)" color="#9e9e9e" fillcolor="#f5f5f5" fontcolor="#9e9e9e" style="rounded,dashed,filled"]
+	271 [label="O -> col 2
+MAX: -1" fillcolor="#dbe9ff"]
+	"271_hidden" [label="+56 nodes" fontcolor="#757575" fontsize=9 shape=plaintext style=""]
+	271 -> "271_hidden" [arrowhead=none color="#bdbdbd" style=dotted]
+	214 [label="O -> col 3
+MAX: 8" fillcolor="#dbe9ff"]
+	"214_hidden" [label="+56 nodes" fontcolor="#757575" fontsize=9 shape=plaintext style=""]
+	214 -> "214_hidden" [arrowhead=none color="#bdbdbd" style=dotted]
+	149 [label="X -> col 2
+MIN: -4" fillcolor="#ffe0e0"]
+	149 -> 150
+	149 -> 207 [color="#9e9e9e" style=dashed]
+	149 -> 208 [color="#9e9e9e" style=dashed]
+	149 -> 209 [color="#9e9e9e" style=dashed]
+	149 -> 210 [color="#9e9e9e" style=dashed]
+	149 -> 211 [color="#9e9e9e" style=dashed]
+	149 -> 212 [color="#9e9e9e" style=dashed]
+	212 [label="O -> col 6
+(pruned)" color="#9e9e9e" fillcolor="#f5f5f5" fontcolor="#9e9e9e" style="rounded,dashed,filled"]
+	211 [label="O -> col 0
+(pruned)" color="#9e9e9e" fillcolor="#f5f5f5" fontcolor="#9e9e9e" style="rounded,dashed,filled"]
+	210 [label="O -> col 5
+(pruned)" color="#9e9e9e" fillcolor="#f5f5f5" fontcolor="#9e9e9e" style="rounded,dashed,filled"]
+	209 [label="O -> col 1
+(pruned)" color="#9e9e9e" fillcolor="#f5f5f5" fontcolor="#9e9e9e" style="rounded,dashed,filled"]
+	208 [label="O -> col 4
+(pruned)" color="#9e9e9e" fillcolor="#f5f5f5" fontcolor="#9e9e9e" style="rounded,dashed,filled"]
+	207 [label="O -> col 2
+(pruned)" color="#9e9e9e" fillcolor="#f5f5f5" fontcolor="#9e9e9e" style="rounded,dashed,filled"]
+	150 [label="O -> col 3
+MAX: -4" fillcolor="#dbe9ff"]
+	"150_hidden" [label="+56 nodes" fontcolor="#757575" fontsize=9 shape=plaintext style=""]
+	150 -> "150_hidden" [arrowhead=none color="#bdbdbd" style=dotted]
+	1 [label="X -> col 3
+MIN: 2" color="#2e7d32" fillcolor="#ffd54f" fontname="Helvetica-Bold" penwidth=3.5]
+	1 -> 2 [color="#2e7d32" penwidth=3]
+	1 -> 59
+	1 -> 74
+	1 -> 89
+	1 -> 104
+	1 -> 119
+	1 -> 134
+	134 [label="O -> col 6
+MAX: 9" fillcolor="#dbe9ff"]
+	"134_hidden" [label="+14 nodes" fontcolor="#757575" fontsize=9 shape=plaintext style=""]
+	134 -> "134_hidden" [arrowhead=none color="#bdbdbd" style=dotted]
+	119 [label="O -> col 0
+MAX: 9" fillcolor="#dbe9ff"]
+	"119_hidden" [label="+14 nodes" fontcolor="#757575" fontsize=9 shape=plaintext style=""]
+	119 -> "119_hidden" [arrowhead=none color="#bdbdbd" style=dotted]
+	104 [label="O -> col 5
+MAX: 6" fillcolor="#dbe9ff"]
+	"104_hidden" [label="+14 nodes" fontcolor="#757575" fontsize=9 shape=plaintext style=""]
+	104 -> "104_hidden" [arrowhead=none color="#bdbdbd" style=dotted]
+	89 [label="O -> col 1
+MAX: 9" fillcolor="#dbe9ff"]
+	"89_hidden" [label="+14 nodes" fontcolor="#757575" fontsize=9 shape=plaintext style=""]
+	89 -> "89_hidden" [arrowhead=none color="#bdbdbd" style=dotted]
+	74 [label="O -> col 4
+MAX: 3" fillcolor="#dbe9ff"]
+	"74_hidden" [label="+14 nodes" fontcolor="#757575" fontsize=9 shape=plaintext style=""]
+	74 -> "74_hidden" [arrowhead=none color="#bdbdbd" style=dotted]
+	59 [label="O -> col 2
+MAX: 3" fillcolor="#dbe9ff"]
+	"59_hidden" [label="+14 nodes" fontcolor="#757575" fontsize=9 shape=plaintext style=""]
+	59 -> "59_hidden" [arrowhead=none color="#bdbdbd" style=dotted]
+	2 [label="O -> col 3
+MAX: 2" color="#2e7d32" fillcolor="#dbe9ff" penwidth=2.5]
+	2 -> 11 [color="#2e7d32" penwidth=3]
+	"2_hidden" [label="+48 nodes" fontcolor="#757575" fontsize=9 shape=plaintext style=""]
+	2 -> "2_hidden" [arrowhead=none color="#bdbdbd" style=dotted]
+	11 [label="X -> col 2
+MIN: 2" color="#2e7d32" fillcolor="#ffe0e0" penwidth=2.5]
+	11 -> 18 [color="#2e7d32" penwidth=3]
+	"11_hidden" [label="+6 nodes" fontcolor="#757575" fontsize=9 shape=plaintext style=""]
+	11 -> "11_hidden" [arrowhead=none color="#bdbdbd" style=dotted]
+	18 [label="O -> col 6
+h(n): 2" color="#2e7d32" fillcolor="#dbe9ff" penwidth=2.5]
+	subgraph cluster_legend {
+		color="#bdbdbd" fontsize=11 label=Key style=rounded
+		legend_chosen [label="Chosen move" color="#2e7d32" fillcolor="#ffd54f" penwidth=3.5]
+		legend_pv [label="Predicted best line" color="#2e7d32" fillcolor=white penwidth=2.5]
+		legend_max [label="MAX node (X to move)" fillcolor="#dbe9ff"]
+		legend_min [label="MIN node (O to move)" fillcolor="#ffe0e0"]
+		legend_pruned [label="Pruned branch" color="#9e9e9e" fillcolor="#f5f5f5" fontcolor="#9e9e9e" style="rounded,dashed,filled"]
+		legend_chosen -> legend_pv [style=invis]
+		legend_pv -> legend_max [style=invis]
+		legend_max -> legend_min [style=invis]
+		legend_min -> legend_pruned [style=invis]
+	}
+}
